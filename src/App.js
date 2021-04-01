@@ -4,11 +4,12 @@ import {OrbitControls,  useGLTF  } from '@react-three/drei'
 import GenericCubeEBody from './Components/CubeEBody'
 import FemaleConnector from './Components/Female'
 import MaleConnector from './Components/MaleConnector'
+import female from './Female.glb'
 import './App.css';
 
 function Model(props) {
   const group = useRef()
-  const { nodes, materials } = useGLTF('Female.glb')
+  const { nodes, materials } = useGLTF(female)
   const [hovered, setHover] = useState(false)
   const [active, setActive] = useState(false)
   useEffect(() => {
