@@ -4,6 +4,8 @@ import {OrbitControls,  useGLTF  } from '@react-three/drei'
 import GenericCubeEBody from './Components/CubeEBody'
 import FemaleConnector from './Components/Female'
 import MaleConnector from './Components/MaleConnector'
+import Cap from './Components/Cap'
+
 import female from './Female.glb'
 import './App.css';
 
@@ -89,7 +91,7 @@ function App() {
       <pointLight position={[-10, -10, -10]} />
       <Suspense fallback={null}>
       <Model  position={[0,0,0.165]} rotation={[90*(Math.PI/180),0,0]}/> 
-      <Box position={[1,0,-0.3]}/>
+      <Cap />
       </Suspense>
       
   
