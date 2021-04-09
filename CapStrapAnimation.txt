@@ -1,0 +1,39 @@
+//in App.js
+
+import {useSpring,a} from 'react-spring/three';
+import strapSound from "../../velcro-noise.mp3";
+
+const openStrap = new Audio(strapSound);
+
+//in App.js, App function before return
+
+const[open,setOpen] = useState(false);
+
+
+//in App.js, App function return, Cap component 
+
+<Cap open={open} setOpen={setOpen} />
+
+
+//in App.js, inside the Cap function, before it's return
+const handleOpen=()=>{
+    props.setOpen(!props.open);
+    openStrap.volume = 0.3;
+    openStrap.play();
+}
+
+const openStrapAnimation = useSpring({
+    rotation: props.open ? [0,0,0]:[1.61,0,0],
+    position: props.open ? [0,-1.5,0]:[0,0,0]
+});
+
+
+//wherever should be clicked, maybe just the strap mesh itself, probably a button
+
+onClick={handleOpen}
+
+<a.primitive rotation={openStrapAnimation.rotation}   >
+
+
+
+

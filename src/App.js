@@ -1,76 +1,85 @@
-import React, { Suspense, useRef, useState, useEffect } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
-import {OrbitControls,  useGLTF  } from '@react-three/drei'
-import GenericCubeEBody from './Components/CubeEBody'
-import FemaleConnector from './Components/Female'
-import MaleConnector from './Components/MaleConnector'
-import Cap from './Components/Cap'
-
-import female from './Female.glb'
+import React, { Suspense, useRef, useState, useEffect } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import {OrbitControls,  useGLTF  } from '@react-three/drei';
+import {useSpring,a} from 'react-spring/three';
+import strapSound from "./velcro-noise.mp3";
 import './App.css';
 
-function Model(props) {
+const openStrap = new Audio(strapSound);
+
+function Cap(props) {
   const group = useRef()
-  const { nodes, materials } = useGLTF(female)
-  const [hovered, setHover] = useState(false)
-  const [active, setActive] = useState(false)
-  useEffect(() => {
-    const cursor = `<svg width="64" height="64" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0)"><path fill="rgba(255, 255, 255, 0.5)" d="M29.5 54C43.031 54 54 43.031 54 29.5S43.031 5 29.5 5 5 15.969 5 29.5 15.969 54 29.5 54z" stroke="#000"/><g filter="url(#filter0_d)"><path d="M29.5 47C39.165 47 47 39.165 47 29.5S39.165 12 29.5 12 12 19.835 12 29.5 19.835 47 29.5 47z" fill="#000"/></g><path d="M2 2l11 2.947L4.947 13 2 2z" fill="#000"/><text fill="#000" style="white-space:pre" font-family="Inter var, sans-serif" font-size="10" letter-spacing="-.01em"><tspan x="35" y="63">${hovered}</tspan></text></g><defs><clipPath id="clip0"><path fill="#fff" d="M0 0h64v64H0z"/></clipPath><filter id="filter0_d" x="6" y="8" width="47" height="47" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/><feOffset dy="2"/><feGaussianBlur stdDeviation="3"/><feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0"/><feBlend in2="BackgroundImageFix" result="effect1_dropShadow"/><feBlend in="SourceGraphic" in2="effect1_dropShadow" result="shape"/></filter></defs></svg>`
-    const auto = `<svg width="64" height="64" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill="rgba(255, 255, 255, 0.5)" d="M29.5 54C43.031 54 54 43.031 54 29.5S43.031 5 29.5 5 5 15.969 5 29.5 15.969 54 29.5 54z" stroke="#000"/><path d="M2 2l11 2.947L4.947 13 2 2z" fill="#000"/></svg>`
-    document.body.style.cursor = `url('data:image/svg+xml;base64,${btoa(hovered ? cursor : auto)}'), auto`
-  }, [hovered])
-  
+  const { nodes, materials } = useGLTF('../../../Cap.glb')
+
+  const handleClick = () => {
+    console.log("Working");
+    
+  }
+  const handleOpen=()=>{
+    props.setOpen(!props.open);
+    openStrap.volume = 0.3;
+    openStrap.play();
+}
+
+const openStrapAnimation = useSpring({
+    rotation: props.open ? [0.02,-0.2,-0.02]:[0,0,0],
+    position: props.open ? [0,0,0]:[0,0,0]
+});
+
   return (
     <group ref={group} {...props} dispose={null}>
-      <mesh material={materials['default']} 
-      geometry={nodes.Triangle_v32.geometry} 
-      material-color={props.color}
-      scale={[0.01, 0.01, 0.01]}
-      onClick={() => setActive(!active)}
-      onPointerOver={() => setHover(true)}
-      onPointerOut={() => setHover(false)}>
-      <meshStandardMaterial color={hovered||active ? 'hotpink' : 'orange'} />  
-      </mesh>
+      <mesh geometry={nodes.Sphere.geometry} material={nodes.Sphere.material} scale={[1.98, 1.98, 1.98]} />
+      <mesh
+        geometry={nodes.Cube.geometry}
+        material={nodes.Cube.material}
+        position={[0, 0.09, 2.21]}
+        scale={[2.01, -0.06, 1.88]}
+        onClick={handleClick}
+      />
+      <mesh
+        geometry={nodes.Sphere001.geometry}
+        material={nodes.Sphere001.material}
+        position={[0.02, 1.73, 0.01]}
+        scale={[0.3, 0.3, 0.3]}
+      />
+      <mesh
+        geometry={nodes.Sphere002.geometry}
+        material={nodes.Sphere002.material}
+        rotation={[0, -0.27, 0]}
+        scale={[1.98, 1.98, 1.98]}
+      />
+      <mesh
+        geometry={nodes.Sphere003.geometry}
+        material={nodes.Sphere003.material}
+        rotation={[0, -0.07, 0]}
+        scale={[1.98, 1.98, 1.98]}
+      />
+      <a.group rotation={openStrapAnimation.rotation}>
+        <primitive object = {nodes.Sphere004} />
+        <a.primitive
+          rotation={openStrapAnimation.rotation}
+          object={nodes.Sphere004}
+        />
+      <mesh
+        onClick={handleOpen}
+        geometry={nodes.Sphere004.geometry}
+        material={nodes.Sphere004.material}
+        position={[0.12, -0.01, -0.04]}
+        scale={[1.98, 1.98, 1.98]}
+      /></a.group>
     </group>
   )
 }
 
-
-function Box(props) {
-  // This reference will give us direct access to the mesh
-  const mesh = useRef()
-  // Set up state for the hovered and active state
-  const [hovered, setHover] = useState(false)
-  const [active, setActive] = useState(false)
-  // Rotate mesh every frame, this is outside of React without overhead
-  useFrame(() => (mesh.current.rotation.x += 0.01))
-  useEffect(() => {
-    const cursor = `<svg width="64" height="64" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0)"><path fill="rgba(255, 255, 255, 0.5)" d="M29.5 54C43.031 54 54 43.031 54 29.5S43.031 5 29.5 5 5 15.969 5 29.5 15.969 54 29.5 54z" stroke="#000"/><g filter="url(#filter0_d)"><path d="M29.5 47C39.165 47 47 39.165 47 29.5S39.165 12 29.5 12 12 19.835 12 29.5 19.835 47 29.5 47z" fill="#000"/></g><path d="M2 2l11 2.947L4.947 13 2 2z" fill="#000"/><text fill="#000" style="white-space:pre" font-family="Inter var, sans-serif" font-size="10" letter-spacing="-.01em"><tspan x="35" y="63">${hovered}</tspan></text></g><defs><clipPath id="clip0"><path fill="#fff" d="M0 0h64v64H0z"/></clipPath><filter id="filter0_d" x="6" y="8" width="47" height="47" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/><feOffset dy="2"/><feGaussianBlur stdDeviation="3"/><feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0"/><feBlend in2="BackgroundImageFix" result="effect1_dropShadow"/><feBlend in="SourceGraphic" in2="effect1_dropShadow" result="shape"/></filter></defs></svg>`
-    const auto = `<svg width="64" height="64" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill="rgba(255, 255, 255, 0.5)" d="M29.5 54C43.031 54 54 43.031 54 29.5S43.031 5 29.5 5 5 15.969 5 29.5 15.969 54 29.5 54z" stroke="#000"/><path d="M2 2l11 2.947L4.947 13 2 2z" fill="#000"/></svg>`
-    document.body.style.cursor = `url('data:image/svg+xml;base64,${btoa(hovered ? cursor : auto)}'), auto`
-  }, [hovered])
-  return (
-    <mesh
-      {...props}
-      ref={mesh}
-      scale={active ? 0.4 : 0.3}
-      onClick={(event) => setActive(!active)}
-      onPointerOver={(event) => setHover(true)}
-      onPointerOut={(event) => setHover(false)}>
-      <boxGeometry args={[1, 1,1]} />
-      <meshStandardMaterial color={hovered ? 'hotpink' : 'orange'} />
-    </mesh>
-  )
-}
-
 function App() {
+  const[open,setOpen] = useState(false);
   return (
     
     
     <Canvas 
     colorManagement
     shadowMap
-    camera={{position: [-1,1,1], fov: 40}}
+    camera={{position: [-5,5,5], fov: 40}}
     invalidateFrameloop 
     style={{ background: "#fff" }}>
     <OrbitControls
@@ -90,8 +99,8 @@ function App() {
       <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
       <pointLight position={[-10, -10, -10]} />
       <Suspense fallback={null}>
-      <Model  position={[0,0,0.165]} rotation={[90*(Math.PI/180),0,0]}/> 
-      <Cap />
+      
+      <Cap open={open} setOpen={setOpen} />
       </Suspense>
       
   
