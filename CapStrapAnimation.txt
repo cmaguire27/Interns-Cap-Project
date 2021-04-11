@@ -1,3 +1,7 @@
+//in command line 
+npm i react-spring
+
+
 //in App.js
 
 import {useSpring,a} from 'react-spring/three';
@@ -23,8 +27,8 @@ const handleOpen=()=>{
 }
 
 const openStrapAnimation = useSpring({
-    rotation: props.open ? [0,0,0]:[1.61,0,0],
-    position: props.open ? [0,-1.5,0]:[0,0,0]
+    rotation: props.open ? [0.02,-0.2,-0.02]:[0,0,0],
+    position: props.open ? [0,0,0]:[0,0,0]
 });
 
 
@@ -32,7 +36,22 @@ const openStrapAnimation = useSpring({
 
 onClick={handleOpen}
 
-<a.primitive rotation={openStrapAnimation.rotation}   >
+
+//Goes instead of the straps mesh
+
+ <a.group rotation={openStrapAnimation.rotation}>
+        <primitive object = {nodes.Sphere004} />
+        <a.primitive
+          rotation={openStrapAnimation.rotation}
+          object={nodes.Sphere004}
+        />
+      <mesh
+        onClick={handleOpen}
+        geometry={nodes.Sphere004.geometry}
+        material={nodes.Sphere004.material}
+        position={[0.12, -0.01, -0.04]}
+        scale={[1.98, 1.98, 1.98]}
+      /></a.group>
 
 
 

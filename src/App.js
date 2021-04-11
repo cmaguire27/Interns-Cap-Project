@@ -13,7 +13,6 @@ function Cap(props) {
 
   const handleClick = () => {
     console.log("Working");
-    
   }
   const handleOpen=()=>{
     props.setOpen(!props.open);
@@ -103,7 +102,6 @@ function App() {
       <Cap open={open} setOpen={setOpen} />
       </Suspense>
       
-  
     </Canvas>
   );
 }
