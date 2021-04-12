@@ -4,12 +4,28 @@ import {OrbitControls,  useGLTF  } from '@react-three/drei';
 import {useSpring,a} from 'react-spring/three';
 import strapSound from "./velcro-noise.mp3";
 import './App.css';
+import {proxy, snapshot, useSnapshot, useProxy} from "valtio"
 
 const openStrap = new Audio(strapSound);
 
+const state = proxy( {
+  current: null,
+  items: {
+    Sphere: "#fff000",
+    Cube:"#fff000",
+    Sphere001:"#000000",
+    Sphere002:"#000000",
+    Sphere003:"#000000",
+    Sphere004:"#000000",
+  }
+});
+
 function Cap(props) {
-  const group = useRef()
-  const { nodes, materials } = useGLTF('../../../Cap.glb')
+  const group = useRef();
+  const snap = proxy(state);
+  const { nodes, materials } = useGLTF('../../../Cap.glb');
+  const [hovered, set] = useState(null);
+  const [active, setActive] = useState(false);
 
   const handleClick = () => {
     console.log("Working");
@@ -26,7 +42,12 @@ const openStrapAnimation = useSpring({
 });
 
   return (
-    <group ref={group} {...props} dispose={null}>
+    <group ref={group} {...props} dispose={null}
+    onPointerOver = {(e)=>(e.stopPropagation(),set(e.object.material.name))}
+    onPointerOut = {(e)=>{e.intersections.length===0 && set(null)}}
+    onPointerDown = {(e)=>{e.stopPropagation();state.current = e.object.material.name}}
+    onPointerMissed = {(e)=>{state.current =null}}
+    >
       <mesh geometry={nodes.Sphere.geometry} material={nodes.Sphere.material} scale={[1.98, 1.98, 1.98]} />
       <mesh
         geometry={nodes.Cube.geometry}
